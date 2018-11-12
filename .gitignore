@@ -1,0 +1,5 @@
+*.tlog
+*.obj
+*.db
+*.sdf
+*.ipch
