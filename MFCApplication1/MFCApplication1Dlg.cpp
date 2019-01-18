@@ -19,6 +19,8 @@
 #include <Nb30.h>
 
 
+#pragma warning(disable:4996)
+#include <windows.h>
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -29,6 +31,12 @@
 #define new DEBUG_NEW
 #endif
 
+
+#define ROLL_PACKAGE_NAME		"roll_package_out"
+#define ROLL_SRC_PACKAGE_NAME	"roll_src_package_"
+#define ROLL_RES_PACKAGE_NAME	"roll_res_package_"
+//比对
+#define ROLL_PACKAGE_NAME		"roll_package_out"
 
 using namespace std;
 using namespace Json;
@@ -146,40 +154,6 @@ void CMFCApplication1Dlg::converToZip(CString target, CString zipname, CString o
 
 	}
 	CloseHandle(hRead);
-}
-
-void CMFCApplication1Dlg::UnpackFile(const CString & strFilePath)
-{
-	CString winRarInstallPath = L"C:\\Program Files\\WinRAR\\WinRAR.exe";
-	CString strDestPath; //目标解压位置
-	int pos = strFilePath.ReverseFind('.');
-	strDestPath = strFilePath.Left(pos);
-
-	// 清空文件
-	DeleteDirectory(strDestPath);
-	if (FALSE == ::CreateDirectory(strDestPath, NULL))
-	{
-		MessageBox(CString("创建解压路径失败"));
-		return;
-	}
-
-	//x解压  -ibck后台执行 -o+如存在，则覆盖 -inul不弹出错误提示  
-	//使用 -ibck，缩小到了系统托盘区域
-	CString strCmd = L"\"" + winRarInstallPath + "\" x -ibck -o+ -inul \"" + strFilePath + "\" \"" + strDestPath + "\"";
-	STARTUPINFO si = { sizeof(si) };
-	PROCESS_INFORMATION pi;
-
-	BOOL bRet = CreateProcess(NULL, strCmd.GetBuffer(MAX_PATH), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-	DWORD dwExit = 0;
-	if (bRet)
-	{
-		//这个地方将导致该函数为阻塞状态  
-		WaitForSingleObject(pi.hProcess, INFINITE);
-		::GetExitCodeProcess(pi.hProcess, &dwExit);
-		CloseHandle(pi.hThread);
-		CloseHandle(pi.hProcess);
-	}
-	return;
 }
 
 TCHAR szDefaultDir[MAX_PATH];
@@ -569,6 +543,10 @@ void CMFCApplication1Dlg::compDirectory(CString source, CString target, CString 
 		CString fileNum;
 	}
 }
+
+
+
+
 bool CMFCApplication1Dlg::DeleteDirectory(CString sDirName)
 {
 	CFileFind tempFind;
@@ -621,14 +599,14 @@ char *CMFCApplication1Dlg::coverToChar(CString str, char* _char)
 bool CMFCApplication1Dlg::newCompfile(CString source, CString target)
 {
 	char file1[MAX_PATH] = "1111111111";
-	char file2[MAX_PATH] = "11111111112";
+	char file2[MAX_PATH] = "2222222222";
 
 	coverToChar(source, file1);
 	coverToChar(target, file2);
 	int ch1, ch2;
 	FILE *in1, *in2;
 
-	// 被比较文件不存在
+	// 基准版本文件不存在，则直接返回false
 	if (!PathFileExists(source)){
 		return false;
 	}
@@ -1743,6 +1721,78 @@ void CMFCApplication1Dlg::execute_cmd_handle(CString cmdline){
 }
 
 
+void CMFCApplication1Dlg::UnpackFile(const CString& unpackPath, const CString & strFilePath, CString& dir)
+{
+	CString winRarInstallPath = L"C:\\Program Files\\WinRAR\\WinRAR.exe";
+	CString strDestPath; //目标解压位置
+	int pos = strFilePath.ReverseFind('.');
+	strDestPath = unpackPath;
+
+	strDestPath = strDestPath + dir + L"\\";
+	// 清空文件
+	DeleteDirectory(strDestPath);
+	::CreateDirectory(strDestPath, NULL);
+
+	//x解压  -ibck后台执行 -o+如存在，则覆盖 -inul不弹出错误提示  
+	//使用 -ibck，缩小到了系统托盘区域
+	CString strCmd = L"\"" + winRarInstallPath + "\" x -ibck -o+ -inul \"" + strFilePath + "\" \"" + strDestPath + "\"";
+	STARTUPINFO si = { sizeof(si) };
+	PROCESS_INFORMATION pi;
+
+	BOOL bRet = CreateProcess(NULL, strCmd.GetBuffer(MAX_PATH), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+	DWORD dwExit = 0;
+	if (bRet)
+	{
+		//这个地方将导致该函数为阻塞状态  
+		WaitForSingleObject(pi.hProcess, INFINITE);
+		::GetExitCodeProcess(pi.hProcess, &dwExit);
+		CloseHandle(pi.hThread);
+		CloseHandle(pi.hProcess);
+	}
+	return;
+}
+
+void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target, CString outpath)
+{
+	CreateDirectory(target, NULL); //创建目标文件夹  
+	CFileFind finder;
+	CString path;
+	path.Format(L"%s/*.*", target);
+	bool bWorking = finder.FindFile(path);
+	while (bWorking) {
+		bWorking = finder.FindNextFile();
+
+		if (finder.IsDirectory() && !finder.IsDots()) { //是文件夹 而且 名称不含 . 或 ..  
+			compDirectoryFileExist(source + "/" + finder.GetFileName(), finder.GetFilePath(), outpath); //递归创建文件夹+"/"+finder.GetFileName()  
+		}
+		else { //是文件 则直接复制  
+			if (!finder.IsDots()) {
+				//if ( true ){
+				auto file = source + "\\" + finder.GetFileName();
+				auto file2 = target + "\\" + finder.GetFileName();
+
+				if (!PathFileExists(file)) {
+					outPutLog(L"回滚文件 " + finder.GetFileName(), false);
+
+					CString nStr = outpath.Right(outpath.GetLength() - outpath.ReverseFind('\\'));
+					CString nPath = outpath + file2.Right(file2.GetLength() - file2.Find(nStr) - nStr.GetLength());
+
+					auto fileName = finder.GetFileName();
+					CString nMakeDir = nPath.Left(nPath.GetLength() - fileName.GetLength());
+					nMakeDir.Replace(L"/", L"\\");
+					MakeDir(nMakeDir);
+
+					CopyFile(finder.GetFilePath(), nPath, FALSE);
+
+				}
+			}
+		}
+	}
+
+}
+
+#define SRC_UNPACK_PACKAGE		"src_unpack_package"
+#define RES_UNPACK_PACKAGE		"res_unpack_package"
 
 void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 {
@@ -1758,19 +1808,54 @@ void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 
 	//解压
 	//m_strOnlineVirsion
+
 	CString unzipPath = m_strUploadPath + L"\\";
-	UnpackFile(unzipPath + srcAndroidName + m_rollVirsion + L".zip");
-	UnpackFile(unzipPath + resCommonName + m_rollVirsion + L".zip");
+	CString srcRollName(SRC_UNPACK_PACKAGE);
+	CString resRollName(RES_UNPACK_PACKAGE);
 
-	UnpackFile(unzipPath + srcAndroidName + m_strVirsion + L".zip");
-	UnpackFile(unzipPath + resCommonName + m_strVirsion + L".zip");
+	srcRollName = L"\\" + srcRollName;
+	resRollName = L"\\" + resRollName;
 
-	//比对
+	CString unzipTempPath = unzipPath + L"temp_package\\";
+	DeleteDirectory(unzipTempPath);
+	CreateDirectory(unzipTempPath, NULL);
 
+	UnpackFile(unzipTempPath, unzipPath + srcAndroidName + m_rollVirsion + L".zip",  m_rollVirsion + srcRollName );
+
+	auto copyPath = unzipTempPath + m_rollVirsion + L"\\";
+	copyDirectory(copyPath + srcRollName + L"\\src", copyPath + srcRollName, true);
+	DeleteDirectory(copyPath + srcRollName + L"\\src");
+
+	UnpackFile(unzipTempPath, unzipPath + resCommonName + m_rollVirsion + L".zip" , m_rollVirsion + resRollName);
+	copyDirectory(copyPath + resRollName + L"\\res", copyPath + resRollName, true);
+	DeleteDirectory(copyPath + resRollName + L"\\res");
+
+	copyPath = unzipTempPath + m_strVirsion + L"\\";
+	UnpackFile(unzipTempPath, unzipPath + srcAndroidName + m_strVirsion + L".zip" , m_strVirsion + srcRollName);
+	copyDirectory(copyPath + srcRollName + L"\\src", copyPath + srcRollName, true);
+	DeleteDirectory(copyPath + srcRollName + L"\\src");
+
+	UnpackFile(unzipTempPath, unzipPath + resCommonName + m_strVirsion + L".zip",  m_strVirsion + resRollName);
+	copyDirectory(copyPath +  resRollName + L"\\res", copyPath + resRollName, true);
+	DeleteDirectory(copyPath +resRollName + L"\\res");
+
+	
+	CString rollPackageName(ROLL_PACKAGE_NAME);
+	auto outPath = m_strUploadPath + L"\\" + rollPackageName;
+
+	DeleteDirectory(outPath);
+	CreateDirectory(outPath, NULL);
+
+    auto srcPath = unzipTempPath  + m_rollVirsion + srcRollName;
+	auto destPath = unzipTempPath + m_strVirsion + srcRollName;
+	compDirectoryFileExist(srcPath, destPath, outPath + srcRollName);
+
+	srcPath = unzipTempPath  + m_rollVirsion  + resRollName;
+	destPath = unzipTempPath + m_strVirsion + resRollName;
+	compDirectoryFileExist(srcPath, destPath, outPath + resRollName);
 
 	//CString publicPath( m_strHotCfgPath );
 	//publicPath.Replace(L"publictest", L"public");
-
 
 	//copyDirectory(m_strHotCfgPath, publicPath, true);
 
@@ -1778,5 +1863,101 @@ void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 	//execute_cmd_handle(jscompileCmd);
 
 	//ShellExecute(NULL, NULL, _T("explorer"), publicPath, NULL, SW_SHOW);
+
+	generateRollPackage();
 }
+
+void CMFCApplication1Dlg::generateRollPackage()
+{
+	CString rollPackageName(ROLL_PACKAGE_NAME);
+	CString srcRollName(SRC_UNPACK_PACKAGE);
+	CString resRollName(RES_UNPACK_PACKAGE);
+
+
+	CString unzipTempPath = m_strUploadPath + L"\\" + rollPackageName + L"\\" ;
+	auto targetPath = unzipTempPath + srcRollName;
+	auto outPath = m_strUploadPath + L"\\temp_package\\" + m_rollVirsion + L"\\" ;
+
+	CString basePath = m_strOnlinePath + L"\\" + m_strGameName + L"_" + m_strOnlineVirsion;
+	auto srcRollPath = outPath + srcRollName ;
+	if (PathFileExists(targetPath)) {
+		CopyFileBetweenDir(targetPath, basePath + L"\\src_package", srcRollPath);
+	}
+
+	targetPath = unzipTempPath + resRollName ;
+	auto resRollPath = outPath + resRollName ;
+	if (PathFileExists(targetPath)) {
+		CopyFileBetweenDir(targetPath, basePath + L"\\res_package", resRollPath);
+	}
+
+	
+
+}
+
+void CMFCApplication1Dlg::CopyFileBetweenDir(CString& source, CString& target, CString& outpath) {
+	CFileFind finder;
+	CString path;
+	path.Format(L"%s/*.*", source);
+	bool bWorking = finder.FindFile(path);
+	while (bWorking) {
+		bWorking = finder.FindNextFile();
+
+		if (finder.IsDirectory() && !finder.IsDots()) { //是文件夹 而且 名称不含 . 或 ..  
+			CopyFileBetweenDir(source + "/" + finder.GetFileName(), finder.GetFilePath(), outpath); //递归创建文件夹+"/"+finder.GetFileName()  
+		}
+		else { //是文件 则直接复制  
+			if (!finder.IsDots()) {
+				//if ( true ){
+				auto file = source + "\\" + finder.GetFileName();
+				auto file2 = target + "\\" + finder.GetFileName();
+
+				if(PathFileExists(file2)) {
+					outPutLog(L"拷贝基准文件 " + finder.GetFileName(), false);
+
+					CString nStr = outpath.Right(outpath.GetLength() - outpath.ReverseFind('\\'));
+					CString nPath = outpath + file2.Right(file2.GetLength() - file2.Find(nStr) - nStr.GetLength());
+
+					auto fileName = finder.GetFileName();
+					CString nMakeDir = nPath.Left(nPath.GetLength() - fileName.GetLength());
+					nMakeDir.Replace(L"/", L"\\");
+					MakeDir(nMakeDir);
+
+					CopyFile(file2, nPath, FALSE);
+				}
+			}
+		}
+	}
+}
+
+
+
+void CMFCApplication1Dlg::zipRollPackage(CString & inputPath, CString & outPath, CString & version)
+{
+	DeleteDirectory(L"C:\\src");
+	DeleteDirectory(L"C:\\res");
+	DeleteDirectory(L"D:\\src");
+
+	//拷贝ios文件
+	//copyDirectory(outPutPath + L"\\src_ios", L"C:\\src", false);
+
+	//拷贝资源文件
+	copyDirectory(inputPath + L"\\res_unpack_package", L"C:\\res", false);
+
+	//拷贝android文件
+	copyDirectory(inputPath + L"\\src_unpack_package", L"D:\\src", false);
+
+
+	CString srcAndroidName("roll_src_package");
+	srcAndroidName = srcAndroidName + version;
+
+	CString resCommonName("roll_res_package");
+	resCommonName = resCommonName + version;
+
+	//converToZip(L"C:\\src", srcIosName, outPutPath);
+	converToZip(L"C:\\res", resCommonName, outPath);
+	converToZip(L"D:\\src", srcAndroidName, outPath);
+
+	outPutLog(L"回滚包处理完成", true);
+}
+
 

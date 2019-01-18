@@ -44,13 +44,16 @@ protected:
 	bool compfile(std::ifstream& in1, std::ifstream& in2);
 	bool newCompfile(CString source, CString target);
 	void compDirectory(CString source, CString target, CString outpath);
+	void compDirectoryFileExist(CString source, CString target, CString outpath);
+
 	void outPutLog(CString log, bool isLine);
 	void cleanLog();
 	void converToZip(CString target, CString zipname , CString outpath);
-	void UnpackFile(const CString & strFilePath);
+	void UnpackFile(const CString& unpackPath, const CString & strFilePath, CString& dir);
 	bool MakeDir(CString szPath);
 	char *coverToChar(CString str, char* _char);
 	void zipPackage(CString& inputPath, CString& outPath, CString& version);
+	void zipRollPackage(CString& inputPath, CString& outPath, CString& version);
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedSelect1();
@@ -124,5 +127,7 @@ public:
 
 	void execute_cmd_handle(CString cmdline);
 	void ggc_ant_auto_compile(void);
+	void generateRollPackage();
+	void CopyFileBetweenDir(CString& source, CString& target, CString& outPath);
 	afx_msg void OnBnClickedPublicUpload();
 };
