@@ -1,3 +1,28 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (MFCApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  MFCApplication1Dlg.cpp
+e:\9you\updatetool\mfcapplication1\CMD5Checksum.h(25): warning C4005: “ASSERT”: 宏重定义
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include\afx.h(382): note: 参见“ASSERT”的前一个定义
+MFCApplication1Dlg.cpp(518): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(520): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(666): warning C4244: “初始化”: 从“std::streamoff”转换到“std::size_t”，可能丢失数据
+MFCApplication1Dlg.cpp(694): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(696): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1168): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1170): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1236): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1238): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1262): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1264): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1555): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1557): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1775): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1777): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1915): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+MFCApplication1Dlg.cpp(1917): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+  正在生成代码
+  1 of 1520 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
   MFCApplication1.vcxproj -> E:\9you\updateTool\Release\auto_packtools.exe
   MFCApplication1.vcxproj -> E:\9you\updateTool\Release\auto_packtools.pdb (Full PDB)

@@ -17,6 +17,8 @@
 #include <httpext.h>
 #include <windef.h>
 #include <Nb30.h>
+#include "gobal.h"
+
 
 
 #pragma warning(disable:4996)
@@ -95,6 +97,7 @@ int getMAC(char *mac)
 	sprintf(mac, "%02X-%02X-%02X-%02X-%02X-%02X", Adapter.adapt.adapter_address[0], Adapter.adapt.adapter_address[1], Adapter.adapt.adapter_address[2], Adapter.adapt.adapter_address[3], Adapter.adapt.adapter_address[4], Adapter.adapt.adapter_address[5]);
 	return 0;
 }
+
 
 
 void CMFCApplication1Dlg::converToZip(CString target, CString zipname, CString outpath)
@@ -359,12 +362,23 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	CStringArray gameList;
 	CString strGameList = ::c_helper::helper_profile_get(CString("strGameList"));
 	::c_helper::string_to_strarray(strGameList, m_gameList, L",");
+
+	auto index = -1;
 	for (int i = 0; i < m_gameList.GetSize(); i++){
 		auto gamename = m_gameList.GetAt(i);
+
+		if (!cmdString.CompareNoCase(gamename)) {
+			index = i;
+		}
 		m_comboGameList.AddString(m_gameList.GetAt(i));
 	}
 
-	m_comboGameList.SetCurSel(0);
+	if (index == -1) {
+		AfxMessageBox(_T("绝少游戏配置"));
+		return false;
+	}
+
+	m_comboGameList.SetCurSel(index);
 	updateAllConfig(0);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE

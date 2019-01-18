@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMD5Checksum.h" />
+    <ClInclude Include="gobal.h" />
     <ClInclude Include="MD5ChecksumDefines.h" />
     <ClInclude Include="c_helper.h" />
     <ClInclude Include="json\assertions.h" />
