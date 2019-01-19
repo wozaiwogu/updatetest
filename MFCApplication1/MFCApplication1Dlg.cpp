@@ -18,7 +18,9 @@
 #include <windef.h>
 #include <Nb30.h>
 #include "gobal.h"
+#include <iostream>
 
+#include <stdio.h>
 
 
 #pragma warning(disable:4996)
@@ -363,7 +365,7 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	CString strGameList = ::c_helper::helper_profile_get(CString("strGameList"));
 	::c_helper::string_to_strarray(strGameList, m_gameList, L",");
 
-	auto index = -1;
+	int index = -1;
 	for (int i = 0; i < m_gameList.GetSize(); i++){
 		auto gamename = m_gameList.GetAt(i);
 
@@ -379,8 +381,9 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	}
 
 	m_comboGameList.SetCurSel(index);
-	updateAllConfig(0);
+	updateAllConfig(index);
 
+	AfxMessageBox(_T("完成"));
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -914,6 +917,7 @@ void CMFCApplication1Dlg::generateHandle()
 			m_strBaseVersion = nStrVirsion;
 			this->zipPackage(outPutPath, m_strUploadPath,nStrVirsion);
 
+			exit(0);
 			return;
 		};
 
@@ -977,6 +981,7 @@ void CMFCApplication1Dlg::generateHandle()
 		m_strBaseVersion = nStrOnLineVirsion;
 		this->zipPackage(nbackupsPath + L"\\pakcage_out", m_strUploadPath, nStrVirsion);
 
+		exit(0);
 		/******************************压缩开始****************************/
 		/*
 		DeleteDirectory(L"C:\\src");
@@ -1279,13 +1284,13 @@ void CMFCApplication1Dlg::alterHotConfig()
 			}
 		}
 	}
-	getVirsion(strCurGameHotPath + L"\\" + manifestPath);
+	//getVirsion(strCurGameHotPath + L"\\" + manifestPath);
 	//alterOnecHotConfig(m_strHotCfgPath + L"\\hnmj_ios_v1.manifest", strMd5);
 
-	CString svnCmd(L"TortoiseProc.exe  /command:commit /path:" + m_strHotCfgPath);
-	execute_cmd_handle(svnCmd);
+	//CString svnCmd(L"TortoiseProc.exe  /command:commit /path:" + m_strHotCfgPath);
+	//execute_cmd_handle(svnCmd);
 
-	ShellExecute(NULL, NULL, _T("explorer"), m_strHotCfgPath, NULL, SW_SHOW);
+	//ShellExecute(NULL, NULL, _T("explorer"), m_strHotCfgPath, NULL, SW_SHOW);
 }
 
 bool CMFCApplication1Dlg::checkConfigVersion(CString codepath)
@@ -1351,8 +1356,19 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 				}
 			}
 		}
+		else {
+			AfxMessageBox(_T("缺少基准版本"));
+			return;
+		}
 	}
 
+	CString oldVersion;
+	oldVersion = version.c_str();
+	size_t strPos = version.find_last_of('.');
+	int newVersionId = std::stoi(version.substr(strPos + 1, strlen(version.c_str()) - strPos));
+
+	newVersionId = newVersionId + 1;
+	version = version.substr(0, strPos + 1) + to_string(newVersionId);
 	m_strVirsion = version.c_str();
 	m_strVirsionId = to_string(versionId).c_str();
 
@@ -1360,9 +1376,17 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 
 	CString mainfirstName(path);
 	mainfirstName = mainfirstName.Right(mainfirstName.GetLength() - mainfirstName.ReverseFind(L'\\') - 1);
-	outPutLog(L"配置文件:" + mainfirstName, true);
+	/*outPutLog(L"配置文件:" + mainfirstName, true);
 	outPutLog(L"最大版本ID:" + m_strVirsionId, false);
-	outPutLog(L"版本号:" + m_strVirsion, false);
+	outPutLog(L"版本号:" + m_strVirsion, false);*/
+
+	printf("--------------------------------------------------------------");
+	_ftprintf(stdout, L"---------------------------------------------");
+	_ftprintf(stdout, L"当前GroupID = " + m_strVirsionId);
+	_ftprintf(stdout, L"当前verion = " + oldVersion);
+	_ftprintf(stdout, L"目标GroupID = " + m_strVirsionId);
+	_ftprintf(stdout, L"目标verion = " + m_strVirsion);
+	_ftprintf(stdout, L"---------------------------------------------");
 }
 
 
@@ -1594,24 +1618,20 @@ void CMFCApplication1Dlg::updateAllConfig(int index)
 	m_commonSrcCheckBox.SetCheck(m_commonString);
 
 	//checkCodeVersion(m_strProjectPath);
+
+	generateHandle();
 }
 
 void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 {
-	CString jsCodePath(codepath + L"\\src\\commonCtr\\platform.js");
-	CString testKey("PlatformConf.isTest");
-	CString versionKey("PlatformConf.Version");
+
+
+	CString jsCodePath = codepath + L"\\src\\config.js";
+	CString  versionKey	= L"version";
 
 	if (!PathFileExists(jsCodePath)){
-
-		jsCodePath	= codepath + L"\\src\\conf.js";
-		testKey		= "conf.isRelease";
-		versionKey	= "conf.version";
-
-		if (!PathFileExists(jsCodePath)){
-			//outPutLog(jsCodePath + L" 文件不存在", true);
-			return;
-		}
+		outPutLog(jsCodePath + L" 文件不存在", true);
+		return;
 	}
 
 	CString checkName = jsCodePath.Right(jsCodePath.GetLength() - jsCodePath.ReverseFind(L'\\') - 1);
@@ -1619,14 +1639,11 @@ void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 
 	CString	str_file_content = ::c_helper::helper_file_text_read_all_utf8_2_unicode(jsCodePath);
 
-	CString	str_file_content_istest = str_file_content.Right(str_file_content.GetLength()-str_file_content.Find(testKey));
-	str_file_content_istest = str_file_content_istest.Left(str_file_content_istest.Find(L";"));
 
 	CString	str_file_content_version = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(versionKey));
-	str_file_content_version = str_file_content_version.Left(str_file_content_version.Find(L";"));
+	str_file_content_version = str_file_content_version.Left(str_file_content_version.Find(L","));
 
 	outPutLog(L"代码配置:", false);
-	outPutLog(str_file_content_istest, false);
 	outPutLog(str_file_content_version, false);
 }
 
