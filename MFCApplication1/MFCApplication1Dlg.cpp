@@ -22,6 +22,8 @@
 
 #include <stdio.h>
 
+#include <io.h>  
+#include <fcntl.h>
 
 #pragma warning(disable:4996)
 #include <windows.h>
@@ -220,6 +222,16 @@ static CString Show(LPCWSTR title)
 
 }
 
+
+void InitConsoleWindow()
+{
+	AllocConsole();
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	int hCrt = _open_osfhandle((long)handle, _O_TEXT);
+	FILE * hf = _fdopen(hCrt, "w");
+	*stdout = *hf;
+}
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -339,6 +351,8 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	// IDM_ABOUTBOX 必须在系统命令范围内。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
+
+	InitConsoleWindow();
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
@@ -705,10 +719,14 @@ void CMFCApplication1Dlg::copyDirectory(CString source, CString target, bool sho
 			auto ret = source.Find(L".svn");
 			if (!finder.IsDots() && -1 == ret){
 				m_copyCount += 1;
-				if (!showflag)
-					outPutLog(L"添加到压缩文件 " + finder.GetFileName(), false);
-				else
-					outPutLog(L"复制 " + finder.GetFileName(), false);
+				if (!showflag) {
+					CString fileName = finder.GetFileName();
+					printf("添加到压缩文件 %s \n", fileName);
+				}
+				else {
+					CString fileName = finder.GetFileName();
+					printf("复制 %s \n", fileName);
+				}
 
 				auto fileName = finder.GetFileName();
 				CopyFile(finder.GetFilePath(), target + "/" + fileName, FALSE);
@@ -723,7 +741,7 @@ void CMFCApplication1Dlg::copyDirectory(CString source, CString target, bool sho
 		CString fileTips;
 		fileTips.Format(L"拷贝文件数量：%d", m_copyCount);
 		outPutLog(fileTips, false);
-		outPutLog(L"==============复制完成==============", false);
+		printf("==============复制完成============== \n");
 	}
 }
 
@@ -828,7 +846,7 @@ void CMFCApplication1Dlg::zipPackage(CString& inputPath, CString& outPath, CStri
 	converToZip(L"C:\\res", resCommonName, outPath);
 	converToZip(L"D:\\src", srcAndroidName, outPath);
 
-	outPutLog(L"差异包处理完成", true);
+	printf("差异包处理完成 \n");
 
 	alterHotConfig();
 }
@@ -866,7 +884,7 @@ void CMFCApplication1Dlg::generateHandle()
 
 		// 编译成字节码
 		CString jscompileCmd(L"cocos jscompile -s " + nStrProjectPath + L"\\src -d " + outPutPath + L"\\src_package");
-		outPutLog(L"正在编译成字节码...，可能会有点卡，安静等就行V_V", true);
+		printf("正在编译成字节码...，可能会有点卡，安静等就行V_V");
 		execute_cmd_handle(jscompileCmd);
 
 		//拷贝ios文件
@@ -897,7 +915,7 @@ void CMFCApplication1Dlg::generateHandle()
 		srcPath = nOnlinePath;
 		if (!PathIsDirectory(srcPath)){
 		
-			outPutLog(L"基本版本不存在，将生产基本版本", true);
+			printf("基本版本不存在，将生产基本版本  \n");
 
 			/*
 			auto targetPath = nbackupsPath + L"\\pakcage_out";
@@ -969,7 +987,7 @@ void CMFCApplication1Dlg::generateHandle()
 			CopyFile(outPutPath + L"\\assertmgr.jsc", outPutPath + "\\assertmgr.js", FALSE);
 		}
 
-		outPutLog(L"==========对比完成==========", false);
+		printf("==========对比完成========== \n");
 		CString tips;
 		tips.Format(L"差异文件共：%d", m_compCount);
 		outPutLog(tips, false);
@@ -1061,7 +1079,7 @@ void CMFCApplication1Dlg::OnBnClickedGenerate()
 		compDirectory(srcPath, compPath + L"\\src_android", outPutPath);
 
 
-		outPutLog(L"==============对比完成==============", false);
+		printf("==============对比完成============== \n");
 
 		CString tips;
 		tips.Format(L"差异文件共：%d", m_compCount);
@@ -1279,7 +1297,7 @@ void CMFCApplication1Dlg::alterHotConfig()
 			if (checkConfigVersion(manifestFile))
 				alterOnecHotConfig(manifestFile, strMd5);
 			else{
-				outPutLog(manifestFile + L" 修改失败", true);
+				printf(" %s 修改失败", manifestFile);
 				break;
 			}
 		}
@@ -1316,7 +1334,7 @@ bool CMFCApplication1Dlg::checkConfigVersion(CString codepath)
 
 				CString strVeersion(list[name].asString().c_str());
 				if (strVeersion == m_strVirsion){
-					outPutLog(L"版本号已存在配置中", true);
+					printf("版本号已存在配置中 \n");
 					ret = false;
 					break;
 				}				
@@ -1380,13 +1398,12 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 	outPutLog(L"最大版本ID:" + m_strVirsionId, false);
 	outPutLog(L"版本号:" + m_strVirsion, false);*/
 
-	printf("--------------------------------------------------------------");
-	_ftprintf(stdout, L"---------------------------------------------");
-	_ftprintf(stdout, L"当前GroupID = " + m_strVirsionId);
-	_ftprintf(stdout, L"当前verion = " + oldVersion);
-	_ftprintf(stdout, L"目标GroupID = " + m_strVirsionId);
-	_ftprintf(stdout, L"目标verion = " + m_strVirsion);
-	_ftprintf(stdout, L"---------------------------------------------");
+	printf("--------------------------------------------------------------\n");
+	printf("当前GroupID = %s \n" , m_strVirsionId);
+	printf("当前verion =  %s \n" , oldVersion);
+	printf("目标GroupID = %s \n" , m_strVirsionId);
+	printf("目标verion = %s \n" , m_strVirsion);
+	printf("--------------------------------------------------------------\n");
 }
 
 

@@ -52,3 +52,6 @@
 #endif
 
 
+#ifdef _DEBUG  
+#pragma comment( linker, "/subsystem:console /entry:wWinMainCRTStartup" )// 
+#endif 
