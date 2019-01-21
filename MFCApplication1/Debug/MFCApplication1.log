@@ -1,5 +1,4 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (MFCApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  stdafx.cpp
   MFCApplication1Dlg.cpp
 e:\9you\updatetool\mfcapplication1\cmd5checksum.h(25): warning C4005: “ASSERT”: 宏重定义
   c:\program files (x86)\microsoft visual studio 14.0\vc\atlmfc\include\afx.h(382): note: 参见“ASSERT”的前一个定义
@@ -8,30 +7,18 @@ e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(537): warning C4800: �
 e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(683): warning C4244: “初始化”: 从“std::streamoff”转换到“std::size_t”，可能丢失数据
 e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(711): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
 e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(713): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1197): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1199): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1265): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1267): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1291): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1293): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1306): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“CString”
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1609): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1611): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1822): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1824): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1962): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1964): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-  MFCApplication1.cpp
-  md5.cpp
-e:\9you\updatetool\mfcapplication1\md5.cpp(121): warning C4244: “参数”: 从“__int64”转换到“unsigned int”，可能丢失数据
-e:\9you\updatetool\mfcapplication1\md5.cpp(137): warning C4018: “<”: 有符号/无符号不匹配
-  json_writer.cpp
-  json_value.cpp
-  json_reader.cpp
-  c_helper.cpp
-  CMD5Checksum.cpp
-e:\9you\updatetool\mfcapplication1\cmd5checksum.h(25): warning C4005: “ASSERT”: 宏重定义
-  c:\program files (x86)\microsoft visual studio 14.0\vc\atlmfc\include\afx.h(382): note: 参见“ASSERT”的前一个定义
-  正在生成代码...
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1198): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1200): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1266): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1268): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1292): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1294): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1307): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“CString”
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1610): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1612): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1823): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1825): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1963): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1965): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
   MFCApplication1.vcxproj -> E:\9you\updateTool\Debug\auto_packtools.exe
   MFCApplication1.vcxproj -> E:\9you\updateTool\Debug\auto_packtools.pdb (Full PDB)

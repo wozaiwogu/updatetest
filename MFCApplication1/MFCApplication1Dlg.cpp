@@ -853,8 +853,9 @@ void CMFCApplication1Dlg::zipPackage(CString& inputPath, CString& outPath, CStri
 	converToZip(L"C:\\res", resCommonName, outPath);
 	converToZip(L"D:\\src", srcAndroidName, outPath);
 
-	printf("差异包处理完成 \n");
-
+	printf("----------------------------------------------------------------\n");
+	printf("--------------------差异包处理完成------------------------------\n");
+	printf("----------------------------------------------------------------\n");
 	alterHotConfig();
 }
 
