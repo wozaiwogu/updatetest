@@ -379,25 +379,25 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	CString strGameList = ::c_helper::helper_profile_get(CString("strGameList"));
 	::c_helper::string_to_strarray(strGameList, m_gameList, L",");
 
-	int index = -1;
+	int index = 0;
 	for (int i = 0; i < m_gameList.GetSize(); i++){
 		auto gamename = m_gameList.GetAt(i);
 
-		if (!cmdString.CompareNoCase(gamename)) {
-			index = i;
-		}
+		//if (!cmdString.CompareNoCase(gamename)) {
+		//	index = i;
+		//}
 		m_comboGameList.AddString(m_gameList.GetAt(i));
 	}
 
-	if (index == -1) {
-		AfxMessageBox(_T("绝少游戏配置"));
-		return false;
-	}
+	//if (index == -1) {
+	//	AfxMessageBox(_T("绝少游戏配置"));
+	//	return false;
+	//}
 
 	m_comboGameList.SetCurSel(index);
 	updateAllConfig(index);
 
-	AfxMessageBox(_T("完成"));
+	//AfxMessageBox(_T("完成"));
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -721,11 +721,13 @@ void CMFCApplication1Dlg::copyDirectory(CString source, CString target, bool sho
 				m_copyCount += 1;
 				if (!showflag) {
 					CString fileName = finder.GetFileName();
-					printf("添加到压缩文件 %s \n", fileName);
+					string strName = CT2A(fileName.GetBuffer());
+					printf("添加到压缩文件 %s \n", strName.c_str());
 				}
 				else {
 					CString fileName = finder.GetFileName();
-					printf("复制 %s \n", fileName);
+					string strName = CT2A(fileName.GetBuffer());
+					printf("复制 %s \n", strName.c_str());
 				}
 
 				auto fileName = finder.GetFileName();
@@ -740,7 +742,9 @@ void CMFCApplication1Dlg::copyDirectory(CString source, CString target, bool sho
 	{
 		CString fileTips;
 		fileTips.Format(L"拷贝文件数量：%d", m_copyCount);
-		outPutLog(fileTips, false);
+		//outPutLog(fileTips, false);
+		string msg = CT2A(fileTips.GetBuffer());
+		printf("%s \n", msg.c_str());
 		printf("==============复制完成============== \n");
 	}
 }
@@ -758,8 +762,11 @@ void CMFCApplication1Dlg::outPutLog(CString log, bool isLine)
 		m_strOutPut = m_strOutPut + L"\r\n----------------------------------------\r\n";
 
 	m_strOutPut = m_strOutPut + log + L"\r\n";
-	m_outPutText.SetWindowTextW(m_strOutPut);
-	m_outPutText.SendMessage(WM_VSCROLL, SB_BOTTOM, 0);
+	//m_outPutText.SetWindowTextW(m_strOutPut);
+	//m_outPutText.SendMessage(WM_VSCROLL, SB_BOTTOM, 0);
+
+	//string strMsg = CT2A(m_strOutPut.GetBuffer());
+	//printf("%s", strMsg);
 }
 
 void CMFCApplication1Dlg::OnBnClickedSelect1()
@@ -884,13 +891,13 @@ void CMFCApplication1Dlg::generateHandle()
 
 		// 编译成字节码
 		CString jscompileCmd(L"cocos jscompile -s " + nStrProjectPath + L"\\src -d " + outPutPath + L"\\src_package");
-		printf("正在编译成字节码...，可能会有点卡，安静等就行V_V");
+		printf("正在编译成字节码...，可能会有点卡，安静等就行V_V \n");
 		execute_cmd_handle(jscompileCmd);
 
 		//拷贝ios文件
 		/*
 		auto srcPath = nStrProjectPath + L"\\src";
-		copyDirectory(srcPath, outPutPath + L"\\src_ios", true);
+		===对比完成=(srcPath, outPutPath + L"\\src_ios", true);
 		*/	
 
 		//拷贝资源文件
@@ -935,7 +942,6 @@ void CMFCApplication1Dlg::generateHandle()
 			m_strBaseVersion = nStrVirsion;
 			this->zipPackage(outPutPath, m_strUploadPath,nStrVirsion);
 
-			exit(0);
 			return;
 		};
 
@@ -990,7 +996,8 @@ void CMFCApplication1Dlg::generateHandle()
 		printf("==========对比完成========== \n");
 		CString tips;
 		tips.Format(L"差异文件共：%d", m_compCount);
-		outPutLog(tips, false);
+		string countStr = CT2A(tips.GetBuffer());
+		printf("%s \n", countStr.c_str());
 
 		if (0 == m_compCount)
 			break;
@@ -999,7 +1006,6 @@ void CMFCApplication1Dlg::generateHandle()
 		m_strBaseVersion = nStrOnLineVirsion;
 		this->zipPackage(nbackupsPath + L"\\pakcage_out", m_strUploadPath, nStrVirsion);
 
-		exit(0);
 		/******************************压缩开始****************************/
 		/*
 		DeleteDirectory(L"C:\\src");
@@ -1308,7 +1314,7 @@ void CMFCApplication1Dlg::alterHotConfig()
 	//CString svnCmd(L"TortoiseProc.exe  /command:commit /path:" + m_strHotCfgPath);
 	//execute_cmd_handle(svnCmd);
 
-	//ShellExecute(NULL, NULL, _T("explorer"), m_strHotCfgPath, NULL, SW_SHOW);
+	ShellExecute(NULL, NULL, _T("explorer"), m_strHotCfgPath, NULL, SW_SHOW);
 }
 
 bool CMFCApplication1Dlg::checkConfigVersion(CString codepath)
@@ -1399,10 +1405,17 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 	outPutLog(L"版本号:" + m_strVirsion, false);*/
 
 	printf("--------------------------------------------------------------\n");
-	printf("当前GroupID = %s \n" , m_strVirsionId);
-	printf("当前verion =  %s \n" , oldVersion);
-	printf("目标GroupID = %s \n" , m_strVirsionId);
-	printf("目标verion = %s \n" , m_strVirsion);
+	string msg = CT2A(m_strVirsionId.GetBuffer());
+	printf("当前GroupID = %s \n" , msg.c_str());
+
+	msg = CT2A(oldVersion.GetBuffer());
+	printf("当前verion =  %s \n" , msg.c_str());
+
+	msg = CT2A(m_strVirsionId.GetBuffer());
+	printf("目标GroupID = %s \n" , msg.c_str());
+
+	msg = CT2A(m_strVirsion.GetBuffer());
+	printf("目标verion = %s \n" , msg.c_str());
 	printf("--------------------------------------------------------------\n");
 }
 
@@ -1636,7 +1649,7 @@ void CMFCApplication1Dlg::updateAllConfig(int index)
 
 	//checkCodeVersion(m_strProjectPath);
 
-	generateHandle();
+	//generateHandle();
 }
 
 void CMFCApplication1Dlg::checkCodeVersion(CString codepath)

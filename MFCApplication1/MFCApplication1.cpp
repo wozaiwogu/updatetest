@@ -76,8 +76,8 @@ BOOL AutoUnpackToolsApp::InitInstance()
 	LPWSTR *cmdLineAry = CommandLineToArgvW(s, &argn);
 	if (argn != 1)
 	{
-		AfxMessageBox(cmdLineAry[1]);
 		cmdString = CString(cmdLineAry[1]);
+		cmdPath = CString(cmdLineAry[2]);
 		
 	}
 
