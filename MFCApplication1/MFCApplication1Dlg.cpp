@@ -785,7 +785,7 @@ void CMFCApplication1Dlg::OnBnProjectPath()
 	m_editProjectPath.SetWindowTextW(m_strProjectPath);
 	::c_helper::helper_profile_set(L"m_strProjectPath", m_strProjectPath);
 
-	checkCodeVersion(m_strProjectPath);
+	//checkCodeVersion(m_strProjectPath);
 
 }
 
@@ -1405,7 +1405,7 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 	outPutLog(L"最大版本ID:" + m_strVirsionId, false);
 	outPutLog(L"版本号:" + m_strVirsion, false);*/
 
-	printf("--------------------------------------------------------------\n");
+	printf("--------------------------------------------------------------------------\n");
 	string msg = CT2A(m_strVirsionId.GetBuffer());
 	printf("当前GroupID = %s \n" , msg.c_str());
 
@@ -1417,7 +1417,7 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 
 	msg = CT2A(m_strVirsion.GetBuffer());
 	printf("目标verion = %s \n" , msg.c_str());
-	printf("--------------------------------------------------------------\n");
+	printf("--------------------------------------------------------------------------\n");
 }
 
 
@@ -1648,17 +1648,21 @@ void CMFCApplication1Dlg::updateAllConfig(int index)
 	m_editOnlineVirsion.SetWindowTextW(this->m_strOnlineVirsion);
 	m_commonSrcCheckBox.SetCheck(m_commonString);
 
-	//checkCodeVersion(m_strProjectPath);
+	string taskName = CT2A(name.GetBuffer());
+	if (taskName.find_first_of("core") != string::npos  || taskName.find_first_of("app") != string::npos) {
+		return;
+	}
+
+	checkCodeVersion(m_strProjectPath);
 
 	//generateHandle();
 }
 
 void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 {
-
-
 	CString jsCodePath = codepath + L"\\src\\config.js";
 	CString  versionKey	= L"version";
+	CString gameNameKey = L"name";
 
 	if (!PathFileExists(jsCodePath)){
 		outPutLog(jsCodePath + L" 文件不存在", true);
@@ -1674,8 +1678,21 @@ void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 	CString	str_file_content_version = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(versionKey));
 	str_file_content_version = str_file_content_version.Left(str_file_content_version.Find(L","));
 
-	outPutLog(L"代码配置:", false);
-	outPutLog(str_file_content_version, false);
+	CString str_file_content_name = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(gameNameKey));
+	str_file_content_name = str_file_content_name.Left(str_file_content_name.Find(L","));
+
+	string nameStr = CT2A(str_file_content_name.GetBuffer());
+	
+	int pos = nameStr.find_first_of(":");
+	nameStr = nameStr.substr(pos + 1, nameStr.length() - pos);
+	string versionStr = CT2A(str_file_content_version.GetBuffer());
+	pos = versionStr.find_first_of(":");
+	versionStr = versionStr.substr(pos + 1, versionStr.length() - pos);
+
+
+	printf("--------------------------------------------------------------------------\n");
+	printf("                            %s:%s\n", nameStr.c_str(), versionStr.c_str());
+	printf("--------------------------------------------------------------------------\n");
 }
 
 
