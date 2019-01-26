@@ -88,6 +88,9 @@ public:
 	CEdit m_editRoll;
 	CString m_rollVirsion;
 
+	CEdit m_editOnline;
+	CString m_onlineVirsion;
+
 	afx_msg void OnEnChangeEditGamename();
 	afx_msg void OnEnChangeEditPackname();
 	afx_msg void OnEnChangeEditVirsion();

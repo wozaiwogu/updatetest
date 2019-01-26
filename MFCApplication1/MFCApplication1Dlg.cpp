@@ -279,6 +279,7 @@ CMFCApplication1Dlg::CMFCApplication1Dlg(CWnd* pParent /*=NULL*/)
 	, m_strVirsion(_T(""))
 	, m_strHotCfgPath(_T(""))
 	, m_strVirsionId(_T(""))
+	, m_onlineVirsion(_T(""))
 	, m_strOnlineVirsion(_T(""))
 	, m_strBaseVersion(_T(""))
 	, m_commonString(FALSE)
@@ -311,6 +312,8 @@ void CMFCApplication1Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK1, m_commonString);
 	DDX_Control(pDX, IDC_EDIT_ROLL, m_editRoll);
 	DDX_Text(pDX, IDC_EDIT_ROLL, m_rollVirsion);
+	DDX_Control(pDX, IDC_EDIT_ROLL, m_editOnline);
+	DDX_Text(pDX, IDC_EDIT_ONLINE, m_onlineVirsion);
 }
 
 BEGIN_MESSAGE_MAP(CMFCApplication1Dlg, CDialogEx)
@@ -337,6 +340,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication1Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK1, &CMFCApplication1Dlg::OnBnClickedCheck1)
 	ON_BN_CLICKED(IDC_SYNC, &CMFCApplication1Dlg::OnBnClickedPublicUpload)
 	ON_EN_CHANGE(IDC_EDIT_ROLL, &CMFCApplication1Dlg::OnEnChangeRollVirsion)
+	ON_EN_CHANGE(IDC_EDIT_ONLINE, &CMFCApplication1Dlg::OnEnChangeOnLineVirsion)
 END_MESSAGE_MAP()
 
 
@@ -1145,6 +1149,10 @@ void CMFCApplication1Dlg::OnEnChangeRollVirsion()
 	m_editRoll.GetWindowTextW(m_rollVirsion);
 }
 
+void CMFCApplication1Dlg::OnEnChangeEditOnlineVirsion() {
+	m_editOnline.GetWindowTextW(m_onlineVirsion);
+}
+
 void CMFCApplication1Dlg::OnEnChangeEditVirsionid()
 {
 	// TODO:  在此添加控件通知处理程序代码
@@ -1909,12 +1917,12 @@ void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 	copyDirectory(copyPath + resRollName + L"\\res", copyPath + resRollName, true);
 	DeleteDirectory(copyPath + resRollName + L"\\res");
 
-	copyPath = unzipTempPath + m_strVirsion + L"\\";
-	UnpackFile(unzipTempPath, unzipPath + srcAndroidName + m_strVirsion + L".zip" , m_strVirsion + srcRollName);
+	copyPath = unzipTempPath + m_onlineVirsion + L"\\";
+	UnpackFile(unzipTempPath, unzipPath + srcAndroidName + m_onlineVirsion + L".zip" , m_onlineVirsion + srcRollName);
 	copyDirectory(copyPath + srcRollName + L"\\src", copyPath + srcRollName, true);
 	DeleteDirectory(copyPath + srcRollName + L"\\src");
 
-	UnpackFile(unzipTempPath, unzipPath + resCommonName + m_strVirsion + L".zip",  m_strVirsion + resRollName);
+	UnpackFile(unzipTempPath, unzipPath + resCommonName + m_onlineVirsion + L".zip", m_onlineVirsion + resRollName);
 	copyDirectory(copyPath +  resRollName + L"\\res", copyPath + resRollName, true);
 	DeleteDirectory(copyPath +resRollName + L"\\res");
 
@@ -1926,11 +1934,11 @@ void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 	CreateDirectory(outPath, NULL);
 
     auto srcPath = unzipTempPath  + m_rollVirsion + srcRollName;
-	auto destPath = unzipTempPath + m_strVirsion + srcRollName;
+	auto destPath = unzipTempPath + m_onlineVirsion + srcRollName;
 	compDirectoryFileExist(srcPath, destPath, outPath + srcRollName);
 
 	srcPath = unzipTempPath  + m_rollVirsion  + resRollName;
-	destPath = unzipTempPath + m_strVirsion + resRollName;
+	destPath = unzipTempPath + m_onlineVirsion + resRollName;
 	compDirectoryFileExist(srcPath, destPath, outPath + resRollName);
 
 	//CString publicPath( m_strHotCfgPath );
