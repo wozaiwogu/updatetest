@@ -95,6 +95,7 @@ public:
 	afx_msg void OnEnChangeEditPackname();
 	afx_msg void OnEnChangeEditVirsion();
 	afx_msg void OnEnChangeRollVirsion();
+	afx_msg void OnEnChangeOnLineVirsion();
 	afx_msg void OnEnChangeOnlinePath();
 	afx_msg void OnBnClickedButtonUpload();
 	afx_msg void OnBnClickedBtnHotcfg();

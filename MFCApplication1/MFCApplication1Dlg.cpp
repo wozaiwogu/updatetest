@@ -312,7 +312,7 @@ void CMFCApplication1Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK1, m_commonString);
 	DDX_Control(pDX, IDC_EDIT_ROLL, m_editRoll);
 	DDX_Text(pDX, IDC_EDIT_ROLL, m_rollVirsion);
-	DDX_Control(pDX, IDC_EDIT_ROLL, m_editOnline);
+	DDX_Control(pDX, IDC_EDIT_ONLINE, m_editOnline);
 	DDX_Text(pDX, IDC_EDIT_ONLINE, m_onlineVirsion);
 }
 
@@ -1149,7 +1149,7 @@ void CMFCApplication1Dlg::OnEnChangeRollVirsion()
 	m_editRoll.GetWindowTextW(m_rollVirsion);
 }
 
-void CMFCApplication1Dlg::OnEnChangeEditOnlineVirsion() {
+void CMFCApplication1Dlg::OnEnChangeOnLineVirsion() {
 	m_editOnline.GetWindowTextW(m_onlineVirsion);
 }
 
@@ -1530,6 +1530,7 @@ void CMFCApplication1Dlg::alterOnecHotConfig(CString path, CString md5)
 		::c_helper::helper_file_text_write_unicode_2_utf8(path, new_file_content);
 	}
 }
+
 void CMFCApplication1Dlg::OnCbnSelchangeComboList()
 {
 	// TODO:  在此添加控件通知处理程序代码
@@ -1944,7 +1945,7 @@ void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 	//CString publicPath( m_strHotCfgPath );
 	//publicPath.Replace(L"publictest", L"public");
 
-	//copyDirectory(m_strHotCfgPath, publicPath, true);
+	//copyDirectory(m_strHotCfgPath, publicPath, true);jiu 
 
 	//CString jscompileCmd(L"TortoiseProc.exe  /command:commit /path:" + publicPath);
 	//execute_cmd_handle(jscompileCmd);
@@ -1976,9 +1977,6 @@ void CMFCApplication1Dlg::generateRollPackage()
 	if (PathFileExists(targetPath)) {
 		CopyFileBetweenDir(targetPath, basePath + L"\\res_package", resRollPath);
 	}
-
-	
-
 }
 
 void CMFCApplication1Dlg::CopyFileBetweenDir(CString& source, CString& target, CString& outpath) {

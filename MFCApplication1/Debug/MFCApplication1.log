@@ -1,31 +1,3 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (MFCApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  MFCApplication1Dlg.cpp
-e:\9you\updatetool\mfcapplication1\cmd5checksum.h(25): warning C4005: “ASSERT”: 宏重定义
-  c:\program files (x86)\microsoft visual studio 14.0\vc\atlmfc\include\afx.h(382): note: 参见“ASSERT”的前一个定义
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(343): error C2039: “OnEnChangeOnLineVirsion”: 不是“CMFCApplication1Dlg”的成员
-  e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.h(17): note: 参见“CMFCApplication1Dlg”的声明
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(343): error C2065: “OnEnChangeOnLineVirsion”: 未声明的标识符
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(539): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(541): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(687): warning C4244: “初始化”: 从“std::streamoff”转换到“std::size_t”，可能丢失数据
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(715): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(717): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1206): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1208): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1274): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1276): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1300): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1302): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1315): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“CString”
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1618): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1620): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1729): error C2084: 函数“void CMFCApplication1Dlg::OnEnChangeEditOnlineVirsion(void)”已有主体
-  e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1152): note: 参见“OnEnChangeEditOnlineVirsion”的前一个定义
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1848): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1850): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1988): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1990): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-  MFCApplication1.cpp
-e:\9you\updatetool\mfcapplication1\mfcapplication1.cpp(5): fatal error C1041: 无法打开程序数据库“E:\9you\updateTool\MFCApplication1\Debug\vc140.idb”；如果要将多个 CL.EXE 写入同一个 .PDB 文件，请使用 /FS
-  正在生成代码...
-cl : 命令行 warning D9028: 最小重新生成失败，正在转换为标准生成
+  MFCApplication1.vcxproj -> E:\9you\updateTool\Debug\auto_packtools.exe
+  MFCApplication1.vcxproj -> E:\9you\updateTool\Debug\auto_packtools.pdb (Full PDB)
