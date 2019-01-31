@@ -860,6 +860,7 @@ void CMFCApplication1Dlg::zipPackage(CString& inputPath, CString& outPath, CStri
 	printf("----------------------------------------------------------------\n");
 	printf("--------------------差异包处理完成------------------------------\n");
 	printf("----------------------------------------------------------------\n");
+
 	alterHotConfig();
 }
 
@@ -1809,7 +1810,7 @@ void CMFCApplication1Dlg::execute_cmd_handle(CString cmdline){
 }
 
 
-void CMFCApplication1Dlg::UnpackFile(const CString& unpackPath, const CString & strFilePath, CString& dir)
+void CMFCApplication1Dlg::UnpackFile(const CString& unpackPath, const CString & strFilePath)
 {
 	CString winRarInstallPath = L"C:\\Program Files\\WinRAR\\WinRAR.exe";
 	CString strDestPath; //目标解压位置
@@ -1840,7 +1841,7 @@ void CMFCApplication1Dlg::UnpackFile(const CString& unpackPath, const CString & 
 	return;
 }
 
-void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target, CString outpath)
+void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target, CString outpath, CString& dir)
 {
 	CreateDirectory(target, NULL); //创建目标文件夹  
 	CFileFind finder;
@@ -1856,6 +1857,7 @@ void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target,
 		else { //是文件 则直接复制  
 			if (!finder.IsDots()) {
 				//if ( true ){
+				CString nStr = outpath.Right(outpath.GetLength() - outpath.ReverseFind(dir));
 				auto file = source + "\\" + finder.GetFileName();
 				auto file2 = target + "\\" + finder.GetFileName();
 

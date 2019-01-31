@@ -44,7 +44,7 @@ protected:
 	bool compfile(std::ifstream& in1, std::ifstream& in2);
 	bool newCompfile(CString source, CString target);
 	void compDirectory(CString source, CString target, CString outpath);
-	void compDirectoryFileExist(CString source, CString target, CString outpath);
+	void compDirectoryFileExist(CString source, CString target, CString outpath, CString& dir);
 
 	void outPutLog(CString log, bool isLine);
 	void cleanLog();
