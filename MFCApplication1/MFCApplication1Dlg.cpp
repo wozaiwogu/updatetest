@@ -1810,7 +1810,7 @@ void CMFCApplication1Dlg::execute_cmd_handle(CString cmdline){
 }
 
 
-void CMFCApplication1Dlg::UnpackFile(const CString& unpackPath, const CString & strFilePath)
+void CMFCApplication1Dlg::UnpackFile(const CString& unpackPath, const CString & strFilePath, CString& dir)
 {
 	CString winRarInstallPath = L"C:\\Program Files\\WinRAR\\WinRAR.exe";
 	CString strDestPath; //目标解压位置
@@ -1841,7 +1841,7 @@ void CMFCApplication1Dlg::UnpackFile(const CString& unpackPath, const CString & 
 	return;
 }
 
-void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target, CString outpath, CString& dir)
+void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target, CString outpath)
 {
 	CreateDirectory(target, NULL); //创建目标文件夹  
 	CFileFind finder;
@@ -1856,8 +1856,6 @@ void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target,
 		}
 		else { //是文件 则直接复制  
 			if (!finder.IsDots()) {
-				//if ( true ){
-				CString nStr = outpath.Right(outpath.GetLength() - outpath.ReverseFind(dir));
 				auto file = source + "\\" + finder.GetFileName();
 				auto file2 = target + "\\" + finder.GetFileName();
 
@@ -1873,6 +1871,9 @@ void CMFCApplication1Dlg::compDirectoryFileExist(CString source, CString target,
 					MakeDir(nMakeDir);
 
 					CopyFile(finder.GetFilePath(), nPath, FALSE);
+
+					string strName = CT2A(file2.GetBuffer());
+					printf("需要回滚的文件 %s \n", strName.c_str());
 
 				}
 			}
@@ -1910,9 +1911,18 @@ void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 	DeleteDirectory(unzipTempPath);
 	CreateDirectory(unzipTempPath, NULL);
 
-	UnpackFile(unzipTempPath, unzipPath + srcAndroidName + m_rollVirsion + L".zip",  m_rollVirsion + srcRollName );
+	auto copyPath = unzipTempPath + m_strOnlineVirsion + L"\\";
+	UnpackFile(unzipTempPath, unzipPath + srcAndroidName + m_strOnlineVirsion + L".zip", m_strOnlineVirsion + srcRollName);
+	copyDirectory(copyPath + srcRollName + L"\\src", copyPath + srcRollName, true);
+	DeleteDirectory(copyPath + srcRollName + L"\\src");
 
-	auto copyPath = unzipTempPath + m_rollVirsion + L"\\";
+	UnpackFile(unzipTempPath, unzipPath + resCommonName + m_strOnlineVirsion + L".zip", m_strOnlineVirsion + resRollName);
+	copyDirectory(copyPath + resRollName + L"\\res", copyPath + resRollName, true);
+	DeleteDirectory(copyPath + resRollName + L"\\res");
+
+
+	copyPath = unzipTempPath + m_rollVirsion + L"\\";
+	UnpackFile(unzipTempPath, unzipPath + srcAndroidName + m_rollVirsion + L".zip",  m_rollVirsion + srcRollName );
 	copyDirectory(copyPath + srcRollName + L"\\src", copyPath + srcRollName, true);
 	DeleteDirectory(copyPath + srcRollName + L"\\src");
 
@@ -1955,6 +1965,12 @@ void CMFCApplication1Dlg::OnBnClickedPublicUpload()
 	//ShellExecute(NULL, NULL, _T("explorer"), publicPath, NULL, SW_SHOW);
 
 	generateRollPackage();
+
+
+	auto inputPath = m_strUploadPath + L"\\temp_package\\" + m_rollVirsion + L"\\";
+
+	m_strBaseVersion = m_strOnlineVirsion;
+	zipRollPackage(inputPath, m_strUploadPath, m_rollVirsion);
 }
 
 void CMFCApplication1Dlg::generateRollPackage()
@@ -1966,18 +1982,19 @@ void CMFCApplication1Dlg::generateRollPackage()
 
 	CString unzipTempPath = m_strUploadPath + L"\\" + rollPackageName + L"\\" ;
 	auto targetPath = unzipTempPath + srcRollName;
-	auto outPath = m_strUploadPath + L"\\temp_package\\" + m_rollVirsion + L"\\" ;
+	auto outPath = m_strUploadPath + L"\\temp_package\\" + m_rollVirsion + L"\\" + srcRollName;
 
-	CString basePath = m_strOnlinePath + L"\\" + m_strGameName + L"_" + m_strOnlineVirsion;
-	auto srcRollPath = outPath + srcRollName ;
+	CString basePath = m_strUploadPath + L"\\temp_package\\" + m_strOnlineVirsion + L"\\" + srcRollName;
 	if (PathFileExists(targetPath)) {
-		CopyFileBetweenDir(targetPath, basePath + L"\\src_package", srcRollPath);
+		CopyFileBetweenDir(targetPath, basePath, outPath);
 	}
 
 	targetPath = unzipTempPath + resRollName ;
-	auto resRollPath = outPath + resRollName ;
+	outPath = m_strUploadPath + L"\\temp_package\\" + m_rollVirsion + L"\\" + resRollName;
+
+	basePath = m_strUploadPath + L"\\temp_package\\" + m_strOnlineVirsion + L"\\" + resRollName;
 	if (PathFileExists(targetPath)) {
-		CopyFileBetweenDir(targetPath, basePath + L"\\res_package", resRollPath);
+		CopyFileBetweenDir(targetPath, basePath, outPath);
 	}
 }
 
@@ -1990,7 +2007,7 @@ void CMFCApplication1Dlg::CopyFileBetweenDir(CString& source, CString& target, C
 		bWorking = finder.FindNextFile();
 
 		if (finder.IsDirectory() && !finder.IsDots()) { //是文件夹 而且 名称不含 . 或 ..  
-			CopyFileBetweenDir(source + "/" + finder.GetFileName(), finder.GetFilePath(), outpath); //递归创建文件夹+"/"+finder.GetFileName()  
+			CopyFileBetweenDir(finder.GetFilePath(), target + "/" + finder.GetFileName(), outpath); //递归创建文件夹+"/"+finder.GetFileName()  
 		}
 		else { //是文件 则直接复制  
 			if (!finder.IsDots()) {
@@ -1999,8 +2016,6 @@ void CMFCApplication1Dlg::CopyFileBetweenDir(CString& source, CString& target, C
 				auto file2 = target + "\\" + finder.GetFileName();
 
 				if(PathFileExists(file2)) {
-					outPutLog(L"拷贝基准文件 " + finder.GetFileName(), false);
-
 					CString nStr = outpath.Right(outpath.GetLength() - outpath.ReverseFind('\\'));
 					CString nPath = outpath + file2.Right(file2.GetLength() - file2.Find(nStr) - nStr.GetLength());
 
@@ -2009,7 +2024,10 @@ void CMFCApplication1Dlg::CopyFileBetweenDir(CString& source, CString& target, C
 					nMakeDir.Replace(L"/", L"\\");
 					MakeDir(nMakeDir);
 
+
 					CopyFile(file2, nPath, FALSE);
+					string strName = CT2A(file2.GetBuffer());
+					printf("拷贝基准文件 %s \n", strName.c_str());
 				}
 			}
 		}
@@ -2034,17 +2052,183 @@ void CMFCApplication1Dlg::zipRollPackage(CString & inputPath, CString & outPath,
 	copyDirectory(inputPath + L"\\src_unpack_package", L"D:\\src", false);
 
 
-	CString srcAndroidName("roll_src_package");
+	CString srcAndroidName(ROLL_SRC_PACKAGE_NAME);
 	srcAndroidName = srcAndroidName + version;
 
-	CString resCommonName("roll_res_package");
+	CString resCommonName(ROLL_RES_PACKAGE_NAME);
 	resCommonName = resCommonName + version;
 
 	//converToZip(L"C:\\src", srcIosName, outPutPath);
 	converToZip(L"C:\\res", resCommonName, outPath);
 	converToZip(L"D:\\src", srcAndroidName, outPath);
 
-	outPutLog(L"回滚包处理完成", true);
+	alterRollHotConfig();
+	printf("----------------------------------------------------------------\n");
+	printf("--------------------版本回滚完成---------------——---------------\n");
+	printf("----------------------------------------------------------------\n");
 }
 
 
+void CMFCApplication1Dlg::alterRollHotConfig()
+{
+	int count = 0;
+	CString manifestPath;
+	CFileFind finder;
+	CString path;
+	path.Format(L"%s/*.*", m_strHotCfgPath);
+	bool bWorking = finder.FindFile(path);
+	while (bWorking) {
+		bWorking = finder.FindNextFile();
+		CString fileName;
+		if (!finder.IsDots()) {
+			count += 1;
+			fileName = finder.GetFileName();
+		}
+
+		// 查找有效的配置文件
+		if (-1 != fileName.Find(L".manifest")) {
+			manifestPath = fileName;
+			break;
+		}
+
+		if (4 < count) {
+			MessageBox(L"无效的配置文件目录");
+			return;
+		}
+	}
+
+	CString strCurGameHotPath(m_strHotCfgPath);
+	//getVirsion(strCurGameHotPath + L"\\" + manifestPath);
+
+	CString strMd5 = MD5::GetMd5();
+	path.Format(L"%s/*.*", m_strHotCfgPath);
+	bWorking = finder.FindFile(path);
+	while (bWorking) {
+		bWorking = finder.FindNextFile();
+		CString fileName;
+		if (!finder.IsDots()) {
+			count += 1;
+			fileName = finder.GetFileName();
+		}
+
+		// 修改有效的配置文件
+		if (-1 != fileName.Find(L".manifest")) {
+			CString  manifestFile(strCurGameHotPath + L"\\" + fileName);
+			if (checkConfigVersion(manifestFile))
+				alterOnecRollHotConfig(manifestFile, strMd5);
+			else {
+				printf(" %s 修改失败", manifestFile);
+				break;
+			}
+		}
+	}
+	//getVirsion(strCurGameHotPath + L"\\" + manifestPath);
+	//alterOnecHotConfig(m_strHotCfgPath + L"\\hnmj_ios_v1.manifest", strMd5);
+
+	//CString svnCmd(L"TortoiseProc.exe  /command:commit /path:" + m_strHotCfgPath);
+	//execute_cmd_handle(svnCmd);
+
+	ShellExecute(NULL, NULL, _T("explorer"), m_strHotCfgPath, NULL, SW_SHOW);
+}
+
+void CMFCApplication1Dlg::alterOnecRollHotConfig(CString path, CString md5)
+{
+	// 版本号+1
+	int nVersionId = _ttoi(m_strVirsionId) + 1;
+
+	CString	str_file_content = ::c_helper::helper_file_text_read_all_utf8_2_unicode(path);
+
+	Json::Reader json_reader;
+	Json::Value json_object;
+	Json::FastWriter fast_writer;
+
+	char json_document[4096];//// = coverToChar
+	char tempVersion[64];//// = coverToChar
+	char tempMd5[100];//// = coverToChar
+
+	bool isBaseVersion = false;
+
+	coverToChar(md5, tempMd5);
+	coverToChar(m_strVirsion, tempVersion);
+	coverToChar(str_file_content, json_document);
+	if (json_reader.parse(json_document, json_object))
+	{
+		Json::Value versionList = json_object["groupVersions"];
+		if (!versionList.isNull()) {
+			Json::Value::Members members(versionList.getMemberNames());
+			for (auto it = members.begin(); it != members.end(); ++it)
+			{
+				const std::string &name = *it;
+				std::string str = versionList[name].asCString();
+			}
+			versionList[to_string(nVersionId)] = Json::Value(tempVersion);
+			auto json_document = fast_writer.write(versionList);
+			json_object["groupVersions"] = versionList;
+
+			json_document = fast_writer.write(json_object);
+		}
+
+		Json::Value assets = json_object["assets"];
+		if (!assets.isNull())
+		{
+			Json::Value json_assets;
+
+			Json::Value::Members members(assets.getMemberNames());
+			for (auto it = members.begin(); it != members.end(); ++it) {
+				const std::string& name = *it;
+				Json::Value& value = assets[name];
+
+				CString strVeersion(value["version"].asString().c_str());
+				if (strVeersion == m_strBaseVersion) {
+					json_assets[name] = value;
+				}
+			}
+
+			if (m_strVirsion != m_strBaseVersion || (m_strVirsion == m_strBaseVersion && members.size() == 0)) {
+				std::string srcName = ROLL_SRC_PACKAGE_NAME;
+				srcName = srcName + tempVersion;
+
+				std::string resName = ROLL_RES_PACKAGE_NAME;
+				resName = resName + tempVersion;
+
+				Json::Value json_assets_src;
+				json_assets_src["compressed"] = Json::Value(true);
+				json_assets_src["group"] = Json::Value(to_string(nVersionId));
+
+				std::string uploadPath = CT2A(m_strUploadPath);
+				std::string md5Str = CMD5Checksum::GetMD5(uploadPath + "\\" + srcName + ".zip");
+
+				json_assets_src["md5"] = Json::Value(md5Str);
+				json_assets_src["path"] = Json::Value(srcName + ".zip");
+				json_assets_src["version"] = Json::Value(tempVersion);
+				auto json_document = fast_writer.write(json_assets_src);
+
+				Json::Value json_assets_res;
+				json_assets_res["compressed"] = Json::Value(true);
+				json_assets_res["group"] = Json::Value(to_string(nVersionId));
+
+				md5Str = CMD5Checksum::GetMD5(uploadPath + "\\" + resName + ".zip");
+				json_assets_res["md5"] = Json::Value(md5Str);
+				json_assets_res["path"] = Json::Value(resName + ".zip");
+				json_assets_res["version"] = Json::Value(tempVersion);
+				json_document = fast_writer.write(json_assets_res);
+
+				json_assets[srcName] = Json::Value(json_assets_src);
+				json_assets[resName] = Json::Value(json_assets_res);
+				json_document = fast_writer.write(json_assets);
+
+				json_object["assets"] = json_assets;
+				json_document = fast_writer.write(json_object);
+			}
+		}
+		else {
+			json_object.removeMember("assets");
+		}
+
+		Json::StyledWriter styled_writer;
+		auto json_document = styled_writer.write(json_object);
+
+		CString new_file_content(json_document.c_str());
+		::c_helper::helper_file_text_write_unicode_2_utf8(path, new_file_content);
+	}
+}

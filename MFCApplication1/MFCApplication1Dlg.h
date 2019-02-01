@@ -44,7 +44,7 @@ protected:
 	bool compfile(std::ifstream& in1, std::ifstream& in2);
 	bool newCompfile(CString source, CString target);
 	void compDirectory(CString source, CString target, CString outpath);
-	void compDirectoryFileExist(CString source, CString target, CString outpath, CString& dir);
+	void compDirectoryFileExist(CString source, CString target, CString outpath);
 
 	void outPutLog(CString log, bool isLine);
 	void cleanLog();
@@ -133,5 +133,7 @@ public:
 	void ggc_ant_auto_compile(void);
 	void generateRollPackage();
 	void CopyFileBetweenDir(CString& source, CString& target, CString& outPath);
+	void alterRollHotConfig();
+	void alterOnecRollHotConfig(CString path, CString md5);
 	afx_msg void OnBnClickedPublicUpload();
 };
