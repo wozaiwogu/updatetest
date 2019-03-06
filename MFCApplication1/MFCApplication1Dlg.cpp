@@ -24,6 +24,9 @@
 
 #include <io.h>  
 #include <fcntl.h>
+#include <sstream>
+#include <fstream>
+#include <vector>
 
 #pragma warning(disable:4996)
 #include <windows.h>
@@ -46,6 +49,23 @@
 
 using namespace std;
 using namespace Json;
+
+vector<string> split(const string& str, const string& pattern)
+{
+	vector<string> ret;
+	if (pattern.empty()) return ret;
+	size_t start = 0, index = str.find_first_of(pattern, 0);
+	while (index != str.npos)
+	{
+		if (start != index)
+			ret.push_back(str.substr(start, index - start));
+		start = index + 1;
+		index = str.find_first_of(pattern, start);
+	}
+	if (!str.substr(start).empty())
+		ret.push_back(str.substr(start));
+	return ret;
+}
 
 
 typedef struct{
@@ -396,6 +416,18 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 
 	m_comboGameList.SetCurSel(index);
 	updateAllConfig(index);
+
+	std::ifstream fin("e:/9you/updatetool/debug/versionlist.txt", std::ios::in);
+	char line[1024] = { 0 };
+	while (fin.getline(line, sizeof(line)))
+	{
+		string content(line);
+		vector<string> parts = split(content, "->");
+		m_versionMap[parts[0]] = parts[1];
+	}
+
+	//fin.clear();
+	//fin.close();
 
 	//AfxMessageBox(_T("完成"));
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -824,7 +856,6 @@ void CMFCApplication1Dlg::OnBnClickedCopyfile()
 	copyDirectory(srcPath, outPutPath + L"\\src_android", true);
 }
 
-
 void CMFCApplication1Dlg::zipPackage(CString& inputPath, CString& outPath, CString& version) {
 	DeleteDirectory(L"C:\\src");
 	DeleteDirectory(L"C:\\res");
@@ -1006,6 +1037,18 @@ void CMFCApplication1Dlg::generateHandle()
 		CreateDirectory(m_strUploadPath, NULL); //创建目标文件夹 
 		m_strBaseVersion = nStrOnLineVirsion;
 		this->zipPackage(nbackupsPath + L"\\pakcage_out", m_strUploadPath, nStrVirsion);
+
+		string msg = m_gameName + " : " + m_gameVersion;
+		m_versionMap[m_gameId] = msg;
+
+		std::ofstream fout("E:/9you/updateTool/Debug/versionList.txt");
+
+		for (map<string, string>::iterator iter = m_versionMap.begin(); iter != m_versionMap.end(); ++iter) {
+			string line = iter->first + "-> " + iter->second;
+			fout << line << std::endl;
+		}
+		fout.clear();
+		fout.close();
 
 		/******************************压缩开始****************************/
 		/*
@@ -1655,6 +1698,7 @@ void CMFCApplication1Dlg::updateAllConfig(int index)
 
 	checkCodeVersion(m_strProjectPath);
 
+
 	//generateHandle();
 }
 
@@ -1663,6 +1707,7 @@ void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 	CString jsCodePath = codepath + L"\\src\\config.js";
 	CString  versionKey	= L"version";
 	CString gameNameKey = L"name";
+	CString gameId = L"gameId";
 
 	if (!PathFileExists(jsCodePath)){
 		outPutLog(jsCodePath + L" 文件不存在", true);
@@ -1681,6 +1726,10 @@ void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 	CString str_file_content_name = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(gameNameKey));
 	str_file_content_name = str_file_content_name.Left(str_file_content_name.Find(L","));
 
+
+	CString str_file_content_gameId = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(gameId));
+	str_file_content_gameId = str_file_content_gameId.Left(str_file_content_gameId.Find(L","));
+
 	string nameStr = CT2A(str_file_content_name.GetBuffer());
 	
 	int pos = nameStr.find_first_of(":");
@@ -1689,9 +1738,16 @@ void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 	pos = versionStr.find_first_of(":");
 	versionStr = versionStr.substr(pos + 1, versionStr.length() - pos);
 
+	string gameIDStr = CT2A(str_file_content_gameId.GetBuffer());
+	pos = gameIDStr.find_first_of(":");
+	gameIDStr = gameIDStr.substr(pos + 1, gameIDStr.length() - pos);
+
+	m_gameName = nameStr;
+	m_gameVersion = versionStr;
+	m_gameId = gameIDStr;
 
 	printf("--------------------------------------------------------------------------\n");
-	printf("                            %s:%s\n", nameStr.c_str(), versionStr.c_str());
+	printf("                           %s     %s:%s\n", gameIDStr.c_str(), nameStr.c_str(), versionStr.c_str());
 	printf("--------------------------------------------------------------------------\n");
 }
 
