@@ -1423,10 +1423,11 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 					version = list[name].asCString();
 				}
 			}
-		}
-		else {
-			AfxMessageBox(_T("缺少基准版本"));
-			return;
+
+			if(version == ""){
+				printf("构件基础版本");
+				return;
+			}
 		}
 	}
 
