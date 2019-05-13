@@ -27,6 +27,7 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <direct.h>
 
 #pragma warning(disable:4996)
 #include <windows.h>
@@ -1044,7 +1045,7 @@ void CMFCApplication1Dlg::generateHandle()
 		std::ofstream fout("E:/9you/updateTool/Debug/versionList.txt");
 
 		for (map<string, string>::iterator iter = m_versionMap.begin(); iter != m_versionMap.end(); ++iter) {
-			string line = iter->first + "-> " + iter->second;
+			string line = iter->first + "->" + iter->second;
 			fout << line << std::endl;
 		}
 		fout.clear();
@@ -1691,6 +1692,27 @@ void CMFCApplication1Dlg::updateAllConfig(int index)
 	m_editHotCfgPath.SetWindowTextW(this->m_strHotCfgPath);
 	m_editOnlineVirsion.SetWindowTextW(this->m_strOnlineVirsion);
 	m_commonSrcCheckBox.SetCheck(m_commonString);
+
+
+	char *pathbuffer;
+	if ((pathbuffer = getcwd(NULL, 0)) == NULL)
+	{
+		perror("getcwd error");
+		return;
+	}
+	
+
+	//string projectPath = CT2A(this->m_strProjectPath.GetBuffer());
+	//string cmd = string(" cd ") + projectPath;
+	//system(cmd.c_str());
+	//system("echo %cd%");
+	//system("git checkout develop");
+	//system("git pull");
+
+
+	//string curPath(pathbuffer);
+	//system(curPath.c_str());
+	//system("echo %cd%");
 
 	string taskName = CT2A(name.GetBuffer());
 	if (taskName.find_first_of("core") != string::npos  || taskName.find_first_of("app") != string::npos) {
