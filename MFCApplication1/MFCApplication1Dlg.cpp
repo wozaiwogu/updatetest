@@ -1490,15 +1490,30 @@ void CMFCApplication1Dlg::alterOnecHotConfig(CString path, CString md5)
 	{
 		Json::Value versionList = json_object["groupVersions"];
 		if (!versionList.isNull()){
+			int minGroup = 10000;
+			std::string groupVersion("");
+
+			Json::Value json_groupVersions;
 			Json::Value::Members members(versionList.getMemberNames());
 			for (auto it = members.begin(); it != members.end(); ++it)
 			{
 				const std::string &name = *it;
 				std::string str = versionList[name].asCString();
+
+				int group = atoi(name.c_str());
+				if (minGroup > group) {
+					minGroup = group;
+					groupVersion = str;
+				}
 			}
-			versionList[to_string(nVersionId)] = Json::Value(tempVersion);
-			auto json_document = fast_writer.write(versionList);
-			json_object["groupVersions"] = versionList;
+
+			if (minGroup < 10000 && groupVersion.compare("") != 0) {
+				json_groupVersions[to_string(minGroup)] = Json::Value(groupVersion);
+			}
+
+			json_groupVersions[to_string(nVersionId)] = Json::Value(tempVersion);
+			auto json_document = fast_writer.write(json_groupVersions);
+			json_object["groupVersions"] = json_groupVersions;
 
 			json_document = fast_writer.write(json_object);
 		}
