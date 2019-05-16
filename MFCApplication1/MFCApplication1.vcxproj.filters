@@ -87,6 +87,9 @@
     <ClInclude Include="CMD5Checksum.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="gobal.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCApplication1.cpp">

@@ -1,35 +1,24 @@
-﻿生成启动时间为 2017/5/25 15:40:36。
-     1>项目“E:\autotPackTools\autotPackTools\MFCApplication1\MFCApplication1.vcxproj”在节点 2 上(Build 个目标)。
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(388,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (MFCApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\auto_packtools.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MFCApplication1Dlg.cpp
-         MFCApplication1Dlg.cpp
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(424): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(426): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(568): warning C4244: “初始化”: 从“std::streamoff”转换到“size_t”，可能丢失数据
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(596): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(598): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(992): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(994): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(1052): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(1054): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(1078): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(1080): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(1350): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-     1>e:\autotpacktools\autotpacktools\mfcapplication1\mfcapplication1dlg.cpp(1352): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\autotPackTools\autotPackTools\Debug\auto_packtools.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"E:\autotPackTools\autotPackTools\Debug\auto_packtools.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\autotPackTools\autotPackTools\Debug\auto_packtools.lib" /MACHINE:X86 Debug\MFCApplication1.res
-         Debug\c_helper.obj
-         Debug\json_reader.obj
-         Debug\json_value.obj
-         Debug\json_writer.obj
-         Debug\md5.obj
-         Debug\MFCApplication1.obj
-         Debug\MFCApplication1Dlg.obj
-         Debug\stdafx.obj
-         MFCApplication1.vcxproj -> E:\autotPackTools\autotPackTools\Debug\auto_packtools.exe
-     1>已完成生成项目“E:\autotPackTools\autotPackTools\MFCApplication1\MFCApplication1.vcxproj”(Build 个目标)的操作。
-
-生成成功。
-
-已用时间 00:00:00.91
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (MFCApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  MFCApplication1Dlg.cpp
+e:\9you\updatetool\mfcapplication1\cmd5checksum.h(25): warning C4005: “ASSERT”: 宏重定义
+  c:\program files (x86)\microsoft visual studio 14.0\vc\atlmfc\include\afx.h(382): note: 参见“ASSERT”的前一个定义
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(568): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(570): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(716): warning C4244: “初始化”: 从“std::streamoff”转换到“std::size_t”，可能丢失数据
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(744): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(746): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1242): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1244): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1310): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1312): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1336): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1338): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1351): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“CString”
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1670): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1672): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1934): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(1936): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(2074): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+e:\9you\updatetool\mfcapplication1\mfcapplication1dlg.cpp(2076): warning C4800: “BOOL”: 将值强制为布尔值“true”或“false”(性能警告)
+  MFCApplication1.vcxproj -> E:\9you\updateTool\Debug\auto_packtools.exe
+  MFCApplication1.vcxproj -> E:\9you\updateTool\Debug\auto_packtools.pdb (Full PDB)

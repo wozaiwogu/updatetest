@@ -17,7 +17,17 @@
 #include <httpext.h>
 #include <windef.h>
 #include <Nb30.h>
+#include "gobal.h"
+#include <iostream>
 
+#include <stdio.h>
+
+#include <io.h>  
+#include <fcntl.h>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include <direct.h>
 
 #pragma warning(disable:4996)
 #include <windows.h>
@@ -40,6 +50,23 @@
 
 using namespace std;
 using namespace Json;
+
+vector<string> split(const string& str, const string& pattern)
+{
+	vector<string> ret;
+	if (pattern.empty()) return ret;
+	size_t start = 0, index = str.find_first_of(pattern, 0);
+	while (index != str.npos)
+	{
+		if (start != index)
+			ret.push_back(str.substr(start, index - start));
+		start = index + 1;
+		index = str.find_first_of(pattern, start);
+	}
+	if (!str.substr(start).empty())
+		ret.push_back(str.substr(start));
+	return ret;
+}
 
 
 typedef struct{
@@ -95,6 +122,7 @@ int getMAC(char *mac)
 	sprintf(mac, "%02X-%02X-%02X-%02X-%02X-%02X", Adapter.adapt.adapter_address[0], Adapter.adapt.adapter_address[1], Adapter.adapt.adapter_address[2], Adapter.adapt.adapter_address[3], Adapter.adapt.adapter_address[4], Adapter.adapt.adapter_address[5]);
 	return 0;
 }
+
 
 
 void CMFCApplication1Dlg::converToZip(CString target, CString zipname, CString outpath)
@@ -213,6 +241,16 @@ static CString Show(LPCWSTR title)
 
 	return strFolderPath;
 
+}
+
+
+void InitConsoleWindow()
+{
+	AllocConsole();
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	int hCrt = _open_osfhandle((long)handle, _O_TEXT);
+	FILE * hf = _fdopen(hCrt, "w");
+	*stdout = *hf;
 }
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -335,6 +373,8 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
+	InitConsoleWindow();
+
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
 	{
@@ -359,14 +399,38 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	CStringArray gameList;
 	CString strGameList = ::c_helper::helper_profile_get(CString("strGameList"));
 	::c_helper::string_to_strarray(strGameList, m_gameList, L",");
+
+	int index = 0;
 	for (int i = 0; i < m_gameList.GetSize(); i++){
 		auto gamename = m_gameList.GetAt(i);
+
+		//if (!cmdString.CompareNoCase(gamename)) {
+		//	index = i;
+		//}
 		m_comboGameList.AddString(m_gameList.GetAt(i));
 	}
 
-	m_comboGameList.SetCurSel(0);
-	updateAllConfig(0);
+	//if (index == -1) {
+	//	AfxMessageBox(_T("绝少游戏配置"));
+	//	return false;
+	//}
 
+	m_comboGameList.SetCurSel(index);
+	updateAllConfig(index);
+
+	std::ifstream fin("e:/9you/updatetool/debug/versionlist.txt", std::ios::in);
+	char line[1024] = { 0 };
+	while (fin.getline(line, sizeof(line)))
+	{
+		string content(line);
+		vector<string> parts = split(content, "->");
+		m_versionMap[parts[0]] = parts[1];
+	}
+
+	//fin.clear();
+	//fin.close();
+
+	//AfxMessageBox(_T("完成"));
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -688,10 +752,16 @@ void CMFCApplication1Dlg::copyDirectory(CString source, CString target, bool sho
 			auto ret = source.Find(L".svn");
 			if (!finder.IsDots() && -1 == ret){
 				m_copyCount += 1;
-				if (!showflag)
-					outPutLog(L"添加到压缩文件 " + finder.GetFileName(), false);
-				else
-					outPutLog(L"复制 " + finder.GetFileName(), false);
+				if (!showflag) {
+					CString fileName = finder.GetFileName();
+					string strName = CT2A(fileName.GetBuffer());
+					printf("添加到压缩文件 %s \n", strName.c_str());
+				}
+				else {
+					CString fileName = finder.GetFileName();
+					string strName = CT2A(fileName.GetBuffer());
+					printf("复制 %s \n", strName.c_str());
+				}
 
 				auto fileName = finder.GetFileName();
 				CopyFile(finder.GetFilePath(), target + "/" + fileName, FALSE);
@@ -705,8 +775,10 @@ void CMFCApplication1Dlg::copyDirectory(CString source, CString target, bool sho
 	{
 		CString fileTips;
 		fileTips.Format(L"拷贝文件数量：%d", m_copyCount);
-		outPutLog(fileTips, false);
-		outPutLog(L"==============复制完成==============", false);
+		//outPutLog(fileTips, false);
+		string msg = CT2A(fileTips.GetBuffer());
+		printf("%s \n", msg.c_str());
+		printf("==============复制完成============== \n");
 	}
 }
 
@@ -723,8 +795,11 @@ void CMFCApplication1Dlg::outPutLog(CString log, bool isLine)
 		m_strOutPut = m_strOutPut + L"\r\n----------------------------------------\r\n";
 
 	m_strOutPut = m_strOutPut + log + L"\r\n";
-	m_outPutText.SetWindowTextW(m_strOutPut);
-	m_outPutText.SendMessage(WM_VSCROLL, SB_BOTTOM, 0);
+	//m_outPutText.SetWindowTextW(m_strOutPut);
+	//m_outPutText.SendMessage(WM_VSCROLL, SB_BOTTOM, 0);
+
+	//string strMsg = CT2A(m_strOutPut.GetBuffer());
+	//printf("%s", strMsg);
 }
 
 void CMFCApplication1Dlg::OnBnClickedSelect1()
@@ -743,7 +818,7 @@ void CMFCApplication1Dlg::OnBnProjectPath()
 	m_editProjectPath.SetWindowTextW(m_strProjectPath);
 	::c_helper::helper_profile_set(L"m_strProjectPath", m_strProjectPath);
 
-	checkCodeVersion(m_strProjectPath);
+	//checkCodeVersion(m_strProjectPath);
 
 }
 
@@ -782,7 +857,6 @@ void CMFCApplication1Dlg::OnBnClickedCopyfile()
 	copyDirectory(srcPath, outPutPath + L"\\src_android", true);
 }
 
-
 void CMFCApplication1Dlg::zipPackage(CString& inputPath, CString& outPath, CString& version) {
 	DeleteDirectory(L"C:\\src");
 	DeleteDirectory(L"C:\\res");
@@ -811,8 +885,9 @@ void CMFCApplication1Dlg::zipPackage(CString& inputPath, CString& outPath, CStri
 	converToZip(L"C:\\res", resCommonName, outPath);
 	converToZip(L"D:\\src", srcAndroidName, outPath);
 
-	outPutLog(L"差异包处理完成", true);
-
+	printf("----------------------------------------------------------------\n");
+	printf("--------------------差异包处理完成------------------------------\n");
+	printf("----------------------------------------------------------------\n");
 	alterHotConfig();
 }
 
@@ -849,13 +924,13 @@ void CMFCApplication1Dlg::generateHandle()
 
 		// 编译成字节码
 		CString jscompileCmd(L"cocos jscompile -s " + nStrProjectPath + L"\\src -d " + outPutPath + L"\\src_package");
-		outPutLog(L"正在编译成字节码...，可能会有点卡，安静等就行V_V", true);
+		printf("正在编译成字节码...，可能会有点卡，安静等就行V_V \n");
 		execute_cmd_handle(jscompileCmd);
 
 		//拷贝ios文件
 		/*
 		auto srcPath = nStrProjectPath + L"\\src";
-		copyDirectory(srcPath, outPutPath + L"\\src_ios", true);
+		===对比完成=(srcPath, outPutPath + L"\\src_ios", true);
 		*/	
 
 		//拷贝资源文件
@@ -880,7 +955,7 @@ void CMFCApplication1Dlg::generateHandle()
 		srcPath = nOnlinePath;
 		if (!PathIsDirectory(srcPath)){
 		
-			outPutLog(L"基本版本不存在，将生产基本版本", true);
+			printf("基本版本不存在，将生产基本版本  \n");
 
 			/*
 			auto targetPath = nbackupsPath + L"\\pakcage_out";
@@ -951,10 +1026,11 @@ void CMFCApplication1Dlg::generateHandle()
 			CopyFile(outPutPath + L"\\assertmgr.jsc", outPutPath + "\\assertmgr.js", FALSE);
 		}
 
-		outPutLog(L"==========对比完成==========", false);
+		printf("==========对比完成========== \n");
 		CString tips;
 		tips.Format(L"差异文件共：%d", m_compCount);
-		outPutLog(tips, false);
+		string countStr = CT2A(tips.GetBuffer());
+		printf("%s \n", countStr.c_str());
 
 		if (0 == m_compCount)
 			break;
@@ -962,6 +1038,18 @@ void CMFCApplication1Dlg::generateHandle()
 		CreateDirectory(m_strUploadPath, NULL); //创建目标文件夹 
 		m_strBaseVersion = nStrOnLineVirsion;
 		this->zipPackage(nbackupsPath + L"\\pakcage_out", m_strUploadPath, nStrVirsion);
+
+		string msg = m_gameName + " : " + m_gameVersion;
+		m_versionMap[m_gameId] = msg;
+
+		std::ofstream fout("E:/9you/updateTool/Debug/versionList.txt");
+
+		for (map<string, string>::iterator iter = m_versionMap.begin(); iter != m_versionMap.end(); ++iter) {
+			string line = iter->first + "->" + iter->second;
+			fout << line << std::endl;
+		}
+		fout.clear();
+		fout.close();
 
 		/******************************压缩开始****************************/
 		/*
@@ -1042,7 +1130,7 @@ void CMFCApplication1Dlg::OnBnClickedGenerate()
 		compDirectory(srcPath, compPath + L"\\src_android", outPutPath);
 
 
-		outPutLog(L"==============对比完成==============", false);
+		printf("==============对比完成============== \n");
 
 		CString tips;
 		tips.Format(L"差异文件共：%d", m_compCount);
@@ -1260,16 +1348,16 @@ void CMFCApplication1Dlg::alterHotConfig()
 			if (checkConfigVersion(manifestFile))
 				alterOnecHotConfig(manifestFile, strMd5);
 			else{
-				outPutLog(manifestFile + L" 修改失败", true);
+				printf(" %s 修改失败", manifestFile);
 				break;
 			}
 		}
 	}
-	getVirsion(strCurGameHotPath + L"\\" + manifestPath);
+	//getVirsion(strCurGameHotPath + L"\\" + manifestPath);
 	//alterOnecHotConfig(m_strHotCfgPath + L"\\hnmj_ios_v1.manifest", strMd5);
 
-	CString svnCmd(L"TortoiseProc.exe  /command:commit /path:" + m_strHotCfgPath);
-	execute_cmd_handle(svnCmd);
+	//CString svnCmd(L"TortoiseProc.exe  /command:commit /path:" + m_strHotCfgPath);
+	//execute_cmd_handle(svnCmd);
 
 	ShellExecute(NULL, NULL, _T("explorer"), m_strHotCfgPath, NULL, SW_SHOW);
 }
@@ -1297,7 +1385,7 @@ bool CMFCApplication1Dlg::checkConfigVersion(CString codepath)
 
 				CString strVeersion(list[name].asString().c_str());
 				if (strVeersion == m_strVirsion){
-					outPutLog(L"版本号已存在配置中", true);
+					printf("版本号已存在配置中 \n");
 					ret = false;
 					break;
 				}				
@@ -1336,9 +1424,21 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 					version = list[name].asCString();
 				}
 			}
+
+			if(version == ""){
+				printf("构件基础版本");
+				return;
+			}
 		}
 	}
 
+	CString oldVersion;
+	oldVersion = version.c_str();
+	size_t strPos = version.find_last_of('.');
+	int newVersionId = std::stoi(version.substr(strPos + 1, strlen(version.c_str()) - strPos));
+
+	newVersionId = newVersionId + 1;
+	version = version.substr(0, strPos + 1) + to_string(newVersionId);
 	m_strVirsion = version.c_str();
 	m_strVirsionId = to_string(versionId).c_str();
 
@@ -1346,9 +1446,23 @@ void CMFCApplication1Dlg::getVirsion(CString path)
 
 	CString mainfirstName(path);
 	mainfirstName = mainfirstName.Right(mainfirstName.GetLength() - mainfirstName.ReverseFind(L'\\') - 1);
-	outPutLog(L"配置文件:" + mainfirstName, true);
+	/*outPutLog(L"配置文件:" + mainfirstName, true);
 	outPutLog(L"最大版本ID:" + m_strVirsionId, false);
-	outPutLog(L"版本号:" + m_strVirsion, false);
+	outPutLog(L"版本号:" + m_strVirsion, false);*/
+
+	printf("--------------------------------------------------------------------------\n");
+	string msg = CT2A(m_strVirsionId.GetBuffer());
+	printf("当前GroupID = %s \n" , msg.c_str());
+
+	msg = CT2A(oldVersion.GetBuffer());
+	printf("当前verion =  %s \n" , msg.c_str());
+
+	msg = CT2A(m_strVirsionId.GetBuffer());
+	printf("目标GroupID = %s \n" , msg.c_str());
+
+	msg = CT2A(m_strVirsion.GetBuffer());
+	printf("目标verion = %s \n" , msg.c_str());
+	printf("--------------------------------------------------------------------------\n");
 }
 
 
@@ -1376,15 +1490,30 @@ void CMFCApplication1Dlg::alterOnecHotConfig(CString path, CString md5)
 	{
 		Json::Value versionList = json_object["groupVersions"];
 		if (!versionList.isNull()){
+			int minGroup = 10000;
+			std::string groupVersion("");
+
+			Json::Value json_groupVersions;
 			Json::Value::Members members(versionList.getMemberNames());
 			for (auto it = members.begin(); it != members.end(); ++it)
 			{
 				const std::string &name = *it;
 				std::string str = versionList[name].asCString();
+
+				int group = atoi(name.c_str());
+				if (minGroup > group) {
+					minGroup = group;
+					groupVersion = str;
+				}
 			}
-			versionList[to_string(nVersionId)] = Json::Value(tempVersion);
-			auto json_document = fast_writer.write(versionList);
-			json_object["groupVersions"] = versionList;
+
+			if (minGroup < 10000 && groupVersion.compare("") != 0) {
+				json_groupVersions[to_string(minGroup)] = Json::Value(groupVersion);
+			}
+
+			json_groupVersions[to_string(nVersionId)] = Json::Value(tempVersion);
+			auto json_document = fast_writer.write(json_groupVersions);
+			json_object["groupVersions"] = json_groupVersions;
 
 			json_document = fast_writer.write(json_object);
 		}
@@ -1579,25 +1708,48 @@ void CMFCApplication1Dlg::updateAllConfig(int index)
 	m_editOnlineVirsion.SetWindowTextW(this->m_strOnlineVirsion);
 	m_commonSrcCheckBox.SetCheck(m_commonString);
 
-	//checkCodeVersion(m_strProjectPath);
+
+	char *pathbuffer;
+	if ((pathbuffer = getcwd(NULL, 0)) == NULL)
+	{
+		perror("getcwd error");
+		return;
+	}
+	
+
+	//string projectPath = CT2A(this->m_strProjectPath.GetBuffer());
+	//string cmd = string(" cd ") + projectPath;
+	//system(cmd.c_str());
+	//system("echo %cd%");
+	//system("git checkout develop");
+	//system("git pull");
+
+
+	//string curPath(pathbuffer);
+	//system(curPath.c_str());
+	//system("echo %cd%");
+
+	string taskName = CT2A(name.GetBuffer());
+	if (taskName.find_first_of("core") != string::npos  || taskName.find_first_of("app") != string::npos) {
+		return;
+	}
+
+	checkCodeVersion(m_strProjectPath);
+
+
+	//generateHandle();
 }
 
 void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 {
-	CString jsCodePath(codepath + L"\\src\\commonCtr\\platform.js");
-	CString testKey("PlatformConf.isTest");
-	CString versionKey("PlatformConf.Version");
+	CString jsCodePath = codepath + L"\\src\\config.js";
+	CString  versionKey	= L"version";
+	CString gameNameKey = L"name";
+	CString gameId = L"gameId";
 
 	if (!PathFileExists(jsCodePath)){
-
-		jsCodePath	= codepath + L"\\src\\conf.js";
-		testKey		= "conf.isRelease";
-		versionKey	= "conf.version";
-
-		if (!PathFileExists(jsCodePath)){
-			//outPutLog(jsCodePath + L" 文件不存在", true);
-			return;
-		}
+		outPutLog(jsCodePath + L" 文件不存在", true);
+		return;
 	}
 
 	CString checkName = jsCodePath.Right(jsCodePath.GetLength() - jsCodePath.ReverseFind(L'\\') - 1);
@@ -1605,15 +1757,36 @@ void CMFCApplication1Dlg::checkCodeVersion(CString codepath)
 
 	CString	str_file_content = ::c_helper::helper_file_text_read_all_utf8_2_unicode(jsCodePath);
 
-	CString	str_file_content_istest = str_file_content.Right(str_file_content.GetLength()-str_file_content.Find(testKey));
-	str_file_content_istest = str_file_content_istest.Left(str_file_content_istest.Find(L";"));
 
 	CString	str_file_content_version = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(versionKey));
-	str_file_content_version = str_file_content_version.Left(str_file_content_version.Find(L";"));
+	str_file_content_version = str_file_content_version.Left(str_file_content_version.Find(L","));
 
-	outPutLog(L"代码配置:", false);
-	outPutLog(str_file_content_istest, false);
-	outPutLog(str_file_content_version, false);
+	CString str_file_content_name = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(gameNameKey));
+	str_file_content_name = str_file_content_name.Left(str_file_content_name.Find(L","));
+
+
+	CString str_file_content_gameId = str_file_content.Right(str_file_content.GetLength() - str_file_content.Find(gameId));
+	str_file_content_gameId = str_file_content_gameId.Left(str_file_content_gameId.Find(L","));
+
+	string nameStr = CT2A(str_file_content_name.GetBuffer());
+	
+	int pos = nameStr.find_first_of(":");
+	nameStr = nameStr.substr(pos + 1, nameStr.length() - pos);
+	string versionStr = CT2A(str_file_content_version.GetBuffer());
+	pos = versionStr.find_first_of(":");
+	versionStr = versionStr.substr(pos + 1, versionStr.length() - pos);
+
+	string gameIDStr = CT2A(str_file_content_gameId.GetBuffer());
+	pos = gameIDStr.find_first_of(":");
+	gameIDStr = gameIDStr.substr(pos + 1, gameIDStr.length() - pos);
+
+	m_gameName = nameStr;
+	m_gameVersion = versionStr;
+	m_gameId = gameIDStr;
+
+	printf("--------------------------------------------------------------------------\n");
+	printf("                           %s     %s:%s\n", gameIDStr.c_str(), nameStr.c_str(), versionStr.c_str());
+	printf("--------------------------------------------------------------------------\n");
 }
 
 

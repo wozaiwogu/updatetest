@@ -7,12 +7,14 @@
 
 #include<iostream>
 #include<fstream>
+#include <map>
 #include "c_helper.h"
 
 #define SRC_IOS_NAME "src_ios_"
 #define SRC_ANDROID_NAME "src_package_"
 #define RES_COMMON_NAME "res_package_"
 
+using namespace std;
 // CMFCApplication1Dlg ¶Ô»°¿ò
 class CMFCApplication1Dlg : public CDialogEx
 {
@@ -130,4 +132,9 @@ public:
 	void generateRollPackage();
 	void CopyFileBetweenDir(CString& source, CString& target, CString& outPath);
 	afx_msg void OnBnClickedPublicUpload();
+
+	std::map<string, string> m_versionMap;
+	string m_gameName;
+	string m_gameVersion;
+	string m_gameId;
 };
